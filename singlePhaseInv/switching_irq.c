@@ -5,8 +5,6 @@
 #include        <header.h>
 #include        <extern.h>
 
-int dacCount = 0;
-
 void MotorControlProc( )
 {
     int temp;
@@ -37,6 +35,8 @@ void MotorControlProc( )
 interrupt void MainPWM(void)
 {
     DIGIT2_SET;
+    static int sampleScopeCount = 0;
+
     if( gMachineState == STATE_RUN ) {
         if( Vdc > ( over_volt_set - 30.0 ))
             EPwm4Regs.CMPA.half.CMPA = MAX_PWM_CNT >> 2 ;
@@ -63,6 +63,14 @@ interrupt void MainPWM(void)
         EPwm1Regs.CMPA.half.CMPA = MAX_PWM_CNT >> 1;
         break;
     case STATE_INIT_RUN:
+        VoltageEstimation();
+        MotorControlProc( );
+        SpaceVectorModulation(Vs_dq_ref);
+
+        Re_Power = Vs_dq[ds] * Is_dq[ds] + Vs_dq[qs] * Is_dq[qs];
+        Im_Power = Vs_dq[ds] * Is_dq[qs] - Vs_dq[qs] * Is_dq[ds];
+        P_total = Re_Power + Im_Power;
+
         EPwm3Regs.CMPA.half.CMPA = MAX_PWM_CNT>>1;
         EPwm2Regs.CMPA.half.CMPA = MAX_PWM_CNT>>1;
         EPwm1Regs.CMPA.half.CMPA = MAX_PWM_CNT>>1;
@@ -79,6 +87,11 @@ interrupt void MainPWM(void)
             VoltageEstimation();
             MotorControlProc( );
             SpaceVectorModulation(Vs_dq_ref);
+
+            Re_Power = Vs_dq[ds] * Is_dq[ds] + Vs_dq[qs] * Is_dq[qs];
+            Im_Power = Vs_dq[ds] * Is_dq[qs] - Vs_dq[qs] * Is_dq[ds];
+            P_total = Re_Power + Im_Power;
+
             EPwm3Regs.CMPA.half.CMPA = DutyCount[u];
             EPwm2Regs.CMPA.half.CMPA = DutyCount[v];
             EPwm1Regs.CMPA.half.CMPA = DutyCount[w];
@@ -95,27 +108,19 @@ interrupt void MainPWM(void)
 _PWM_TRIP:
     digital_out_proc();
 //---
-    if( !sendAdcDataFlag ){
-        if(graphCount< GRAPH_NUMBER ){
-            adcData[0][graphCount].INTEGER = (int)(Is_abc[as] * 10);
-            adcData[1][graphCount].INTEGER = (int)(Is_abc[bs] * 10);
-            adcData[2][graphCount].INTEGER = adc_result[0];
-            adcData[3][graphCount].INTEGER = adc_result[1];
-
-//            adcData[2][graphCount].INTEGER = adc_result[4];     // adc_exSense
-//            adcData[3][graphCount].INTEGER = adc_result[5];     // adc_Cmd
-//            adcData[0][graphCount].INTEGER = (int)(Is_abc[as] * 100);
-//            adcData[1][graphCount].INTEGER = (int)(Is_abc[bs] * 100);
-//            adcData[2][graphCount].INTEGER = lpfadcIa;
-//            adcData[3][graphCount].INTEGER = lpfadcIb;
-//          adcData[0][graphCount].INTEGER = adc_result[0];
-//          adcData[1][graphCount].INTEGER = (int)(4095 * DutyRatio[0]);
-//          adcData[2][graphCount].INTEGER = (int)(4095 * DutyRatio[1]);
-//          adcData[3][graphCount].INTEGER = (int)(4095 * DutyRatio[2]);
-            graphCount ++;
+    if( sendAdcDataFlag == 0 ){
+        if( sampleScopeCount < scopeLoopCount ){
+           sampleScopeCount ++;
+        } else {
+           sampleScopeCount = 0;
+           scopeData[0][scopeCount].INTEGER = (int)( ( * scopePoint[scopePointCh1]-codeScopeOffsetCh1) * invCodeScopeScaleCh1 * 204.8 + 2048);
+           scopeData[1][scopeCount].INTEGER = (int)( ( * scopePoint[scopePointCh2]-codeScopeOffsetCh2) * invCodeScopeScaleCh2 * 204.8 + 2048);
+           scopeData[2][scopeCount].INTEGER = (int)( ( * scopePoint[scopePointCh3]-codeScopeOffsetCh3) * invCodeScopeScaleCh3 * 204.8 + 2048);
+           scopeData[3][scopeCount].INTEGER = (int)( ( * scopePoint[scopePointCh4]-codeScopeOffsetCh4) * invCodeScopeScaleCh4 * 204.8 + 2048);
+           scopeCount = ( scopeCount < ( SCOPE_MAX_NUMBER-1 )) ? scopeCount + 1 : 0;
         }
-        else graphCount = 0;
     }
+
     EPwm1Regs.ETCLR.bit.INT = 1;
     PieCtrlRegs.PIEACK.all = PIEACK_GROUP3;
     DIGIT2_CLEAR;

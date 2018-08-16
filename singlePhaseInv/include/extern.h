@@ -7,6 +7,15 @@ extern int lpfadcIb;
 
 extern double exSensRef;
 
+extern double dAdcIa;
+extern double dAdcIb;
+extern double dAdcVdc;
+extern double dAdcTemp;
+extern double dAdcSens;
+extern double dAdcCmd;
+
+extern double * scopePoint[30];
+
 // control and flag
 extern CODE_INFO code_inform;
 extern union PROTECT_FLAG protect_reg;
@@ -32,8 +41,8 @@ extern int gControlMode;
 extern int gDeChargeFlag;
 
 extern int sendAdcDataFlag;
-extern int graphCount;
-extern UNION16 adcData[4][GRAPH_NUMBER+1];
+extern int scopeCount;
+extern UNION16 scopeData[4][SCOPE_MAX_NUMBER];
 
 // reference
 extern double  reference_in;
@@ -195,6 +204,8 @@ extern double  Power_gap;
 
 extern double  Re_Power;
 extern double  Im_Power;
+extern double  P_total;
+
 extern double  Te_max;
 extern double  Te_ref;
 extern double  Te;
@@ -211,7 +222,6 @@ extern double  Fs;
 extern double  inv_Fs;
 extern double  Fs_dq[2];
 extern double  Fs1;
-
 extern double  Fr;
 extern double  inv_Fr;
 extern double  Fr_ref;
@@ -446,7 +456,35 @@ extern double Max_DeltaTheta;          // 92
 extern double Delta_wr_FilterPoleCoeff_L; // 93
 extern double Delta_wr_FilterPoleCoeff_U; //94
 
+extern double codeScopeLoopCount;
+
+extern double codeScopePointCh1;
+extern double codeScopeScaleCh1;
+extern double codeScopeOffsetCh1;
+
+extern double codeScopePointCh2;
+extern double codeScopeScaleCh2;
+extern double codeScopeOffsetCh2;
+
+extern double codeScopePointCh3;
+extern double codeScopeScaleCh3;
+extern double codeScopeOffsetCh3;
+
+extern double codeScopePointCh4;
+extern double codeScopeScaleCh4;
+extern double codeScopeOffsetCh4;
 // end of code
+extern double invCodeScopeScaleCh1;
+extern double invCodeScopeScaleCh2;
+extern double invCodeScopeScaleCh3;
+extern double invCodeScopeScaleCh4;
+
+extern int scopeLoopCount;
+extern int scopePointCh1;
+extern int scopePointCh2;
+extern int scopePointCh3;
+extern int scopePointCh4;
+
 extern double under_volt_set;          // 302
 extern double over_speed_level;        // 303
 extern double e_thermal_level;         // 304

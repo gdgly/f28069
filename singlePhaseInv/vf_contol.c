@@ -30,14 +30,11 @@ int vf_loop_control(double cmd_ref)
 	while(LoopCtrl == 1)
 	{
 		Nop();
-		
 		trip_code = trip_check();
 		if( trip_code !=0 ){
-			LoopCtrl = 0;
+		    LoopCtrl = 0;
 		}
 		get_command( & command, & ref_in0);	            //
-		Nop();
-
 		if( command == CMD_START ) reference_in = ref_in0;
 
 		switch( gMachineState )
@@ -46,14 +43,14 @@ int vf_loop_control(double cmd_ref)
 			if( command == CMD_STOP){
                 strncpy(MonitorMsg,"READY",20); gMachineState = STATE_READY; LoopCtrl= 0;
 		    } else if( gfRunTime < 0.2 ){
-				Freq_ref=0.0;	rpm_ref=0.0; reference_out = 0.0;				
+				Freq_ref=0.0;	rpm_ref=0.0; reference_out = 0.0;
 			} else{
 				strncpy(MonitorMsg,"RUN",20); gMachineState = STATE_RUN; reference_out = MIN_REF;
 			}
 			break;
 		case STATE_RUN:
 			if( command == CMD_NULL ){
-			    ramp_proc(reference_in, &reference_out);
+			    ramp_proc(reference_in, & reference_out);
 			} else if( command == CMD_STOP ) {
 				strncpy(MonitorMsg,"GO_STOP",20); gMachineState = STATE_GO_STOP; reference_in = 0.0;
 			} else if( command == CMD_SPEED_UP ){
@@ -85,11 +82,8 @@ int vf_loop_control(double cmd_ref)
 void vf_simple_control()
 {
     Freq_out = codeRateHz * reference_out;
-
-    rpm_Coeff = 60.0 * inv_P_pair / PI_2;
-
-    we=PI_2 * Freq_out;
-
+    // rpm_Coeff = 60.0 * inv_P_pair / PI_2;
+    we = PI_2 * Freq_out;
     rpm = rpm_Coeff * we;   //  rpm = rpm_Coeff * wr
 
     theta += we * Ts;

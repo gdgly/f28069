@@ -4,9 +4,9 @@
 
 #define CPU_FREQ    90E6
 #define LSPCLK_FREQ CPU_FREQ/4
-//#define SCI_FREQ    115200
+#define SCI_FREQ    115200
 //#define SCI_FREQ    38400
-#define SCI_FREQ    230400
+//#define SCI_FREQ    230400
 #define SCI_PRD     (LSPCLK_FREQ/(SCI_FREQ*8))-1
 
 #define UARTA_BAUD_RATE          SCI_PRD     // 115200
@@ -57,20 +57,24 @@ void scia_fifo_init()
 	IER |= M_INT9;		// M == 0x0100 scia irq
 }
 
+#define INV_RPM_SCALE   0.005     // 1.0 / 200.0 ;
+#define INV_I_SCALE     0.5         //  = 1.0 / 2.0 ;
+#define INV_P_SCALE     0.001      // 1/1000
 void sciaMonitor()     // need_edit
 {
-    int temp;
+    UNION16 unionRpm,unionIrms,unionPower, unionRePower,unionImPower;
+    int i, temp;
     double fTemp;
-    char str[21] ={0};
+    char str[50] ={0};
 
     switch(gMachineState){
         case STATE_POWER_ON:    strncpy(MonitorMsg,"[POWON]",7); break;
         case STATE_READY:       strncpy(MonitorMsg,"[READY]",7); break;
-        case STATE_RUN:         strncpy(MonitorMsg,"[RUN ]",7); break;
-        case STATE_INIT_RUN:    strncpy(MonitorMsg,"[INIT]",7); break;
+        case STATE_RUN:         strncpy(MonitorMsg,"[RUN  ]",7); break;
+        case STATE_INIT_RUN:    strncpy(MonitorMsg,"[INIT ]",7); break;
         case STATE_GO_STOP:     strncpy(MonitorMsg,"[GOSTP]",7); break;
         case STATE_TRIP:
-            strncpy(MonitorMsg,"[TRIP] ",7);
+            strncpy(MonitorMsg,"[TRIP ]",7);
             break;
         default:  strncpy(MonitorMsg,"[SYERR]",7); break;
     }
@@ -101,25 +105,44 @@ void sciaMonitor()     // need_edit
         return;
     }
 
-    snprintf( str,20,"%s : ",MonitorMsg);
-    load_scia_tx_mail_box(str);
+    strncpy( str,"9:4:900:0.000e+0:",17); load_scia_tx_mail_box(str);
+    load_scia_tx_mail_box(MonitorMsg);
 
-    fTemp = Is_mag_rms;
-    //fTemp = LPF_Ia;
-    temp = (int)(floor(fTemp*10 +0.5));
-    snprintf( str,20,"lpfI = %3d.%1dA : ",(temp/10),temp%10);
-    load_scia_tx_mail_box(str);
+    unionRpm.INTEGER    = (int)( rpm * INV_RPM_SCALE * 204.8) + 2048;
+    unionIrms.INTEGER   = (int)( Is_mag_rms * INV_I_SCALE * 204.8) + 2048;
+    unionPower.INTEGER  = (int)( P_total * INV_P_SCALE * 204.8) + 2048;
+    unionRePower.INTEGER  = (int)( Re_Power * INV_P_SCALE * 204.8) + 2048;
+    unionImPower.INTEGER  = (int)( Im_Power * INV_P_SCALE * 204.8) + 2048;
 
-    fTemp = rpm;
-    temp = (int)(floor(fTemp+0.5));
-    snprintf( str,20,"RPM = %4d : ", temp);
-    load_scia_tx_mail_box(str);
+    i = 0;
+    str[ i*3 + 0] = (( unionRpm.byte.MSB     ) & 0x0f) | 0x40  ;
+    str[ i*3 + 1] = (( unionRpm.byte.LSB >> 4) & 0x0f) | 0x40 ;
+    str[ i*3 + 2] = (( unionRpm.byte.LSB     ) & 0x0f) | 0x40;
 
-    fTemp = Vdc;
-    temp = (int)(floor(fTemp +0.5));
-    snprintf( str,20,"Vdc = %4dV : ",temp);
+    i = 1;
+    str[ i*3 + 0] = (( unionIrms.byte.MSB     ) & 0x0f) | 0x40;
+    str[ i*3 + 1] = (( unionIrms.byte.LSB >> 4) & 0x0f) | 0x40;
+    str[ i*3 + 2] = (( unionIrms.byte.LSB     ) & 0x0f) | 0x40;
+
+    i = 2;
+    str[ i*3 + 0] = (( unionPower.byte.MSB     ) & 0x0f) | 0x40 ;
+    str[ i*3 + 1] = (( unionPower.byte.LSB >> 4) & 0x0f) | 0x40;
+    str[ i*3 + 2] = (( unionPower.byte.LSB     ) & 0x0f) | 0x40;
+
+    i = 3;
+    str[ i*3 + 0] = (( unionRePower.byte.MSB     ) & 0x0f) | 0x40 ;
+    str[ i*3 + 1] = (( unionRePower.byte.LSB >> 4) & 0x0f) | 0x40;
+    str[ i*3 + 2] = (( unionRePower.byte.LSB     ) & 0x0f) | 0x40 ;
+
+    i = 4;
+    str[ i*3 + 0] = (( unionImPower.byte.MSB     ) & 0x0f) | 0x40 ;
+    str[ i*3 + 1] = (( unionImPower.byte.LSB >> 4) & 0x0f) | 0x40;
+    str[ i*3 + 2] = (( unionImPower.byte.LSB     ) & 0x0f) | 0x40;
+
+    str[ i*3 + 3 ] = '\r';
+    str[ i*3 + 4 ] = '\n';
+    str[ i*3 + 5 ] = 0;
     load_scia_tx_mail_box(str);
-    load_scia_tx_mail_box("\r\n");
 }
 
 void loadSciaTxMailBox_bk( char * st)
@@ -180,75 +203,39 @@ void load_scia_tx_mail_box( char * st)
      }
     SciaRegs.SCIFFTX.bit.TXFFIENA = 1;  // Clear SCI Interrupt flag
 }
+
 // channel 100,101,102,103
+
 void loadSciaTxBufAdc(int channel )
 {
     int i,j;
-    char str[10]={0};
+    char str[40]={0};
 
     scia_tx_start_addr =0;
-    j = channel - 100;
-    if( j > 3 ) return;
+    scia_tx_end_addr =0;
 
     sendAdcDataFlag = 1;    // data update blocking
-    for(j = 0; j < 4 ; j++ ){
-        for( i = 0 ; i < 100 ; i++){
-            snprintf( str,6,"%04d,",adcData[j][i].INTEGER); load_scia_tx_mail_box(str);
+
+    for( j = 0; j < 4 ; j++){
+        strncpy( str,"9:4:900:1.000e+2:",17); load_scia_tx_mail_box(str);
+        strncpy(str,"ch0:",4);
+        str[2] += (j+1);
+        str[4] = 0;
+        load_scia_tx_mail_box(str);
+
+        for( i = 0 ; i < 600 ; i++){
+            //scopeData[j][i].INTEGER = 1000 * ( j + 1);
+            str[0] = (( scopeData[j][i].byte.MSB     ) & 0x0f) | 0x40 ;
+            str[1] = (( scopeData[j][i].byte.LSB >> 4) & 0x0f) | 0x40;
+            str[2] = (( scopeData[j][i].byte.LSB     ) & 0x0f) | 0x40;
+            str[3] = 0;
+            load_scia_tx_mail_box(str);
         }
         strncpy(str,"ch0\r\n",5);
-        str[2] += j;
+        str[2] += (j+1);
+        str[5] = 0;
         load_scia_tx_mail_box(str);
-        delay_msecs(15);
-    }
-    delay_msecs(150);
-    for(j = 0; j < 4 ; j++ ){
-        for( i = 100 ; i < 200 ; i++){
-            snprintf( str,6,"%04d,",adcData[j][i].INTEGER); load_scia_tx_mail_box(str);
-        }
-        strncpy(str,"ch0\r\n",5);
-        str[2] += j;
-        load_scia_tx_mail_box(str);
-        delay_msecs(15);
-    }
-    delay_msecs(150);
-    for(j = 0; j < 4 ; j++ ){
-        for( i = 200 ; i < 300 ; i++){
-            snprintf( str,6,"%04d,",adcData[j][i].INTEGER); load_scia_tx_mail_box(str);
-        }
-        strncpy(str,"ch0\r\n",5);
-        str[2] += j;
-        load_scia_tx_mail_box(str);
-        delay_msecs(15);
-    }
-    delay_msecs(150);
-    for(j = 0; j < 4 ; j++ ){
-        for( i = 300 ; i < 400 ; i++){
-            snprintf( str,6,"%04d,",adcData[j][i].INTEGER); load_scia_tx_mail_box(str);
-        }
-        strncpy(str,"ch0\r\n",5);
-        str[2] += j;
-        load_scia_tx_mail_box(str);
-        delay_msecs(15);
-    }
-    delay_msecs(150);
-    for(j = 0; j < 4 ; j++ ){
-        for( i = 400 ; i < 500 ; i++){
-            snprintf( str,6,"%04d,",adcData[j][i].INTEGER); load_scia_tx_mail_box(str);
-        }
-        strncpy(str,"ch0\r\n",5);
-        str[2] += j;
-        load_scia_tx_mail_box(str);
-        delay_msecs(15);
-    }
-    delay_msecs(150);
-    for(j = 0; j < 4 ; j++ ){
-        for( i = 500 ; i < 600 ; i++){
-            snprintf( str,6,"%04d,",adcData[j][i].INTEGER); load_scia_tx_mail_box(str);
-        }
-        strncpy(str,"ch0\r\n",5);
-        str[2] += j;
-        load_scia_tx_mail_box(str);
-        delay_msecs(15);
+        delay_msecs(200);
     }
     sendAdcDataFlag = 0;
 }
@@ -358,11 +345,11 @@ void scia_cmd_proc( int * sci_cmd, double * sci_ref)
                  * sci_cmd = CMD_SAVE;  * sci_ref = 0.0;
                  load_scia_tx_mail_box("UART CMD_SAVE");
              }
-             else if( data == 50 ){
+/*             else if( data == 50 ){
                    * sci_cmd = CMD_READ_ALL;  * sci_ref = 0.0;
                    load_scia_tx_mail_box("UART CMD_READ_ALL");
             }
-            else if( data == 80 ){
+ */           else if( data == 80 ){
                    * sci_cmd = CMD_NULL;  * sci_ref = 0.0;
 //                   get_adc_offset();
             }
@@ -391,11 +378,9 @@ void scia_cmd_proc( int * sci_cmd, double * sci_ref)
                  sendAdcDataFlag = 1;
                  loadSciaTxBufAdc(check);
                  sendAdcDataFlag = 0;
-             }
+                 }
              else {
                  sciaMonitor();
-                 // load_scia_tx_mail_box(monitOut);
-                 // load_scia_tx_mail_box("\r\n");
                  Nop();
              }
              return;
@@ -403,8 +388,8 @@ void scia_cmd_proc( int * sci_cmd, double * sci_ref)
          else if(addr == 901){    //  monitor state
              check = (int)data;
              if(check==0){
-                 * sci_cmd = CMD_READ_ALL;  * sci_ref = 0.0;
-                 // readAllCodes();
+                 /* sci_cmd = CMD_READ_ALL;  * sci_ref = 0.0; */
+                 readAllCodes();
              }
              return;
          }
@@ -510,17 +495,27 @@ void scia_cmd_proc( int * sci_cmd, double * sci_ref)
              }
              return;
          }
+         else if (addr == 909 ){
+                 temp = (int) rpm;
+              snprintf( str,20,"Rpm = %4d : ",temp); load_scia_tx_mail_box(str);
+              snprintf( str,20,"Irms = %1e : ",Is_mag_rms); load_scia_tx_mail_box(str);
+              snprintf( str,20,"P_total = %1e : ",P_total); load_scia_tx_mail_box(str);
+              snprintf( str,20,"refer_out = %1e : ",reference_out); load_scia_tx_mail_box(str);
+              load_scia_tx_mail_box(" \r\n");
+              delay_msecs(10);
+              return;
+          }
          else if (addr == 910 ){
-             snprintf( str,20,"Ia = %4d : ",adc_result[0]); load_scia_tx_mail_box(str);
-             snprintf( str,20,"Ib = %4d : ",adc_result[1]); load_scia_tx_mail_box(str);
-             snprintf( str,20,"Vdc= %4d : ",adc_result[2]); load_scia_tx_mail_box(str);
-             snprintf( str,20,"Tmp= %4d : ",adc_result[3]); load_scia_tx_mail_box(str);
-             snprintf( str,20,"Sen= %4d : ",adc_result[4]); load_scia_tx_mail_box(str);
-             snprintf( str,20,"Cmd= %4d : ",adc_result[5]); load_scia_tx_mail_box(str);
-             load_scia_tx_mail_box(" \r\n");
-             delay_msecs(10);
-             return;
-         }
+              snprintf( str,20,"Ia = %4d : ",adc_result[0]); load_scia_tx_mail_box(str);
+              snprintf( str,20,"Ib = %4d : ",adc_result[1]); load_scia_tx_mail_box(str);
+              snprintf( str,20,"Vdc= %4d : ",adc_result[2]); load_scia_tx_mail_box(str);
+              snprintf( str,20,"Tmp= %4d : ",adc_result[3]); load_scia_tx_mail_box(str);
+              snprintf( str,20,"Sen= %4d : ",adc_result[4]); load_scia_tx_mail_box(str);
+              snprintf( str,20,"Cmd= %4d : ",adc_result[5]); load_scia_tx_mail_box(str);
+              load_scia_tx_mail_box(" \r\n");
+              delay_msecs(10);
+              return;
+          }
 // read code proc
          check = get_code_information( addr, CMD_READ_DATA , & code_inform);
          if(check != 0 ){

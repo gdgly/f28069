@@ -420,19 +420,7 @@ int get_code_information(int address,int cmd , CODE_INFO *  codes)
         if( cmd == CMD_WRITE_RAM ) K_Damp_Is = codes->code_value;
         set_code_default(0.1,1.0,0.45,K_Damp_Is,0,codes);
         break;
-/*
-    case CODE_GM_Is:
-        strncpy(codes->disp, "GM_Is",20);
-        if( cmd == CMD_WRITE_RAM ) GM_Is = codes->code_value;
-        set_code_default(2.5,10.0,7.0,GM_Is,0,codes);
-        break;
 
-    case CODE_PM_Is:
-        strncpy(codes->disp, "PM_Is",20);
-        if( cmd == CMD_WRITE_RAM ) PM_Is = codes->code_value;
-        set_code_default(0.15,1.3,0.785,PM_Is,0,codes);
-        break;
-*/
     case CODE_KpIs:
         strncpy(codes->disp, "Kp Is",20);
         if( cmd == CMD_WRITE_RAM ) codeKpIs = codes->code_value;
@@ -505,6 +493,76 @@ int get_code_information(int address,int cmd , CODE_INFO *  codes)
         strncpy(codes->disp, "d_wr_fltPoleCoefU",20);
         if( cmd == CMD_WRITE_RAM ) Delta_wr_FilterPoleCoeff_U = codes->code_value;
         set_code_default(0.1,20.0,3.0,Delta_wr_FilterPoleCoeff_U,0,codes);
+        break;
+//--- 100 scope channel setting
+    case CODE_scopeLoopCount:
+        strncpy(codes->disp, "scope Loop Count",20);
+        if( cmd == CMD_WRITE_RAM ) codeScopeLoopCount = codes->code_value;
+        set_code_default(0.0,100.0,10.0,codeScopeLoopCount,0,codes);
+        break;
+//--- ch1 Point Scale Offset
+    case CODE_scopePointCh1:
+        strncpy(codes->disp, "scope Point Ch1",20);
+        if( cmd == CMD_WRITE_RAM ) codeScopePointCh1 = codes->code_value;
+        set_code_default(0.0,30.0,0.0,codeScopePointCh1,0,codes);
+        break;
+    case CODE_scopeScaleCh1:
+        strncpy(codes->disp, "scope Scale Ch1",20);
+        if( cmd == CMD_WRITE_RAM ) codeScopeScaleCh1 = codes->code_value;
+        set_code_default(0.1,500.0,5.0,codeScopeScaleCh1,0,codes);
+        break;
+    case CODE_scopeOffsetCh1:
+        strncpy(codes->disp, "scope Offset Ch1",20);
+        if( cmd == CMD_WRITE_RAM ) codeScopeOffsetCh1 = codes->code_value;
+        set_code_default(0.0,50.0,0.0,codeScopeOffsetCh1,0,codes);
+        break;
+//--- ch2 Point Scale Offset
+    case CODE_scopePointCh2:
+        strncpy(codes->disp, "scope Point Ch2",20);
+        if( cmd == CMD_WRITE_RAM ) codeScopePointCh2 = codes->code_value;
+        set_code_default(0.0,30.0,1.0,codeScopePointCh2,0,codes);
+        break;
+    case CODE_scopeScaleCh2:
+        strncpy(codes->disp, "scope Scale Ch2",20);
+        if( cmd == CMD_WRITE_RAM ) codeScopeScaleCh2 = codes->code_value;
+        set_code_default(0.1,500.0,5.0,codeScopeScaleCh2,0,codes);
+        break;
+    case CODE_scopeOffsetCh2:
+        strncpy(codes->disp, "scope Offset Ch2",20);
+        if( cmd == CMD_WRITE_RAM ) codeScopeOffsetCh2 = codes->code_value;
+        set_code_default(0.0,50.0,0.0,codeScopeOffsetCh2,0,codes);
+        break;
+//--- ch3 Point Scale Offset
+    case CODE_scopePointCh3:
+        strncpy(codes->disp, "scope Point Ch3",20);
+        if( cmd == CMD_WRITE_RAM ) codeScopePointCh3 = codes->code_value;
+        set_code_default(0.0,30.0,2.0,codeScopePointCh3,0,codes);
+        break;
+    case CODE_scopeScaleCh3:
+        strncpy(codes->disp, "scope Scale Ch3",20);
+        if( cmd == CMD_WRITE_RAM ) codeScopeScaleCh3 = codes->code_value;
+        set_code_default(0.1,500.0,5.0,codeScopeScaleCh3,0,codes);
+        break;
+    case CODE_scopeOffsetCh3:
+        strncpy(codes->disp, "scope Offset Ch3",20);
+        if( cmd == CMD_WRITE_RAM ) codeScopeOffsetCh3 = codes->code_value;
+        set_code_default(0.0,50.0,0.0,codeScopeOffsetCh3,0,codes);
+        break;
+//--- ch4 Point Scale Offset
+    case CODE_scopePointCh4:
+        strncpy(codes->disp, "scope Point Ch4",20);
+        if( cmd == CMD_WRITE_RAM ) codeScopePointCh4 = codes->code_value;
+        set_code_default(0.0,30.0,3.0,codeScopePointCh4,0,codes);
+        break;
+    case CODE_scopeScaleCh4:
+        strncpy(codes->disp, "scope Scale Ch4",20);
+        if( cmd == CMD_WRITE_RAM ) codeScopeScaleCh4 = codes->code_value;
+        set_code_default(0.1,500.0,5.0,codeScopeScaleCh4,0,codes);
+        break;
+    case CODE_scopeOffsetCh4:
+        strncpy(codes->disp, "scope Offset Ch4",20);
+        if( cmd == CMD_WRITE_RAM ) codeScopeOffsetCh4 = codes->code_value;
+        set_code_default(0.0,50.0,0.0,codeScopeOffsetCh4,0,codes);
         break;
 
 	case CODE_END:
@@ -743,6 +801,7 @@ void readAllCodes()
     char * str;
     scia_tx_end_addr = 0;
     scia_tx_start_addr = 0;
+    loadSciaTxMailBox("9:4:901:0.000e+0:");
     loadSciaTxMailBox("//Read code data:");
     loadSciaTxMailBox("code  data  Disc:");
     for( addr = 0 ; addr <= CODE_END ; addr++){
@@ -753,7 +812,7 @@ void readAllCodes()
             load_scia_tx_mail_box(str);
             load_scia_tx_mail_box(code_inform.disp);
             load_scia_tx_mail_box(" : ");
-            delay_msecs(2);
+            delay_msecs(4);
         }
     }
     load_scia_tx_mail_box("endOfReadall.\r\n");

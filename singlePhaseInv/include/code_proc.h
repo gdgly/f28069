@@ -91,8 +91,6 @@
 #define CODE_PM_Fr                      81
 
 #define CODE_K_Damp_Is                  82
-//#define CODE_GM_Is                      83
-//#define CODE_PM_Is                      84
 #define CODE_KpIs                      83
 #define CODE_KiIs                      84
 
@@ -107,7 +105,25 @@
 #define CODE_Delta_wr_FilterPoleCoeff_L 93
 #define CODE_Delta_wr_FilterPoleCoeff_U 94
 
-#define CODE_END                        95
+#define CODE_scopeLoopCount             100
+
+#define CODE_scopePointCh1              101
+#define CODE_scopeScaleCh1              102
+#define CODE_scopeOffsetCh1             103
+
+#define CODE_scopePointCh2              104
+#define CODE_scopeScaleCh2              105
+#define CODE_scopeOffsetCh2             106
+
+#define CODE_scopePointCh3              107
+#define CODE_scopeScaleCh3              108
+#define CODE_scopeOffsetCh3             109
+
+#define CODE_scopePointCh4              110
+#define CODE_scopeScaleCh4              111
+#define CODE_scopeOffsetCh4             112
+
+#define CODE_END                        113
 
 #define CODE_Data_Check						800
 #define CODE_Data_Backup					801

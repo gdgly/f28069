@@ -64,6 +64,13 @@ interrupt void adcIsr(void)
     adc_result[4] = adcExSensor = AdcResult.ADCRESULT4;        //adcExSensor
     adc_result[5] = adcCmdAnalog = AdcResult.ADCRESULT5;
 
+    dAdcIa      = (double)(adcIa);
+    dAdcIb      = (double)(adcIb);
+    dAdcVdc     = (double)(adcVdc);
+    dAdcTemp    = (double)(adcIgbtTemperature);
+    dAdcSens    = (double)(adcExSensor);
+    dAdcCmd     = (double)(adcCmdAnalog);
+
     sensVdc = Vdc_factor * adcVdc + Vdc_calc_offset;
     lpfVdcIn[0] = sensVdc;
     lpf2nd( lpfVdcIn, lpfVdcOut, lpfVdcK);

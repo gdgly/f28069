@@ -99,6 +99,15 @@ void main( void )
     strncpy(MonitorMsg,"POWER_ON",20);
     gPWMTripCode = 0;		//
 
+
+    /*
+    for( ; ; )
+    {
+        strncpy(gStr1,"Hello from Vector Inverter !\r\n",40);
+        load_sci_tx_mail_box(gStr1);
+        delay_msecs(1000);
+    }
+     */
     if( load_code2ram() != 0 ) tripProc();
 
     commonVariableInit();
@@ -135,8 +144,10 @@ void main( void )
 
 	if( gPWMTripCode !=0 )	tripProc();
 	strncpy(MonitorMsg,"READY",20);delay_msecs(20);
-	strncpy(gStr1,"READY",20);
+	strncpy(gStr1,"READY \r\n",20);
 	load_sci_tx_mail_box(gStr1); delay_msecs(20);
+
+
 	GATE_DRIVER_ENABLE;
 
 	for( ; ; )

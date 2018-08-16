@@ -54,6 +54,12 @@ extern void delay_msecs( unsigned long ulmSec);
 extern void ePwmPortOff();
 extern void ePwmEnable();
 extern void InitGpio(void);
+
+// hyd_unit.c
+extern void hyd_unit_control();
+extern int hyd_unit_loop_proc();
+extern void hyd_unit_proc(int state, double * ref_out);
+
 // I2C_eeprom.c
 extern int check_code_data(int address, UNION32 u32data );
 extern void I2CA_Init(void);
@@ -93,6 +99,9 @@ extern int COMMON_VECT_CNTL_ParameterVerification();
 extern int COMMON_SL_VECT_CNTL_ParameterVerification();
 extern int SL_TORQUE_CNTL_Parameter();
 extern int SL_SPEED_CNTL_Parameter();
+
+// setPoint.c
+extern void setScopePoint();
 
 //SL_Vect.c
 void SL_SpeedCntl_SFRF();

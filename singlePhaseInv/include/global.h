@@ -7,6 +7,15 @@ int lpfadcIb;
 
 double exSensRef;
 
+double dAdcIa;
+double dAdcIb;
+double dAdcVdc;
+double dAdcTemp;
+double dAdcSens;
+double dAdcCmd;
+
+double * scopePoint[30];
+
 // control and flag
 CODE_INFO code_inform = {0,0,0,0,0,0,{0}};
 union PROTECT_FLAG protect_reg;
@@ -32,8 +41,9 @@ int gControlMode;
 int gDeChargeFlag;
 
 int sendAdcDataFlag;
-int graphCount=0;
-UNION16 adcData[4][GRAPH_NUMBER+1];
+int scopeCount=0;
+
+UNION16 scopeData[4][SCOPE_MAX_NUMBER];
 
 // reference
 double  reference_in=0.0;
@@ -182,6 +192,7 @@ double  del_Vs_comp=0.0;
 
 
 // power and torque
+
 double Te_rat;
 double inv_Te_rat;
 double Kt;
@@ -196,6 +207,8 @@ double  Power_gap=0.0;
 
 double  Re_Power=0.0;
 double  Im_Power=0.0;
+double  P_total;
+
 double	Te_max=0.0;
 double	Te_ref=0.0;
 double	Te=0.0;
@@ -449,7 +462,35 @@ double Max_DeltaTheta;          // 92
 double Delta_wr_FilterPoleCoeff_L; // 93
 double Delta_wr_FilterPoleCoeff_U; //94
 
+double codeScopeLoopCount;
+
+double codeScopePointCh1;
+double codeScopeScaleCh1;
+double codeScopeOffsetCh1;
+
+double codeScopePointCh2;
+double codeScopeScaleCh2;
+double codeScopeOffsetCh2;
+
+double codeScopePointCh3;
+double codeScopeScaleCh3;
+double codeScopeOffsetCh3;
+
+double codeScopePointCh4;
+double codeScopeScaleCh4;
+double codeScopeOffsetCh4;
+
 // end of code
+double invCodeScopeScaleCh1;
+double invCodeScopeScaleCh2;
+double invCodeScopeScaleCh3;
+double invCodeScopeScaleCh4;
+
+int scopeLoopCount;
+int scopePointCh1;
+int scopePointCh2;
+int scopePointCh3;
+int scopePointCh4;
 
 double over_speed_level;		// 303
 double e_thermal_level;			// 304

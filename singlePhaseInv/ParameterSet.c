@@ -7,6 +7,20 @@ void commonVariableInit()
 {
     double x1,x2,y1,y2;
 
+    setScopePoint();
+
+    scopeLoopCount = (int)(codeScopeLoopCount);
+
+    scopePointCh1 = (int)(floor(codeScopePointCh1+0.5));
+    scopePointCh2 = (int)(floor(codeScopePointCh2+0.5));
+    scopePointCh3 = (int)(floor(codeScopePointCh3+0.5));
+    scopePointCh4 = (int)(floor(codeScopePointCh4+0.5));
+
+    invCodeScopeScaleCh1 = 1.0 / codeScopeScaleCh1;
+    invCodeScopeScaleCh2 = 1.0 / codeScopeScaleCh2;
+    invCodeScopeScaleCh3 = 1.0 / codeScopeScaleCh3;
+    invCodeScopeScaleCh4 = 1.0 / codeScopeScaleCh4;
+
     code_adc_vdc_low    = 100;
     code_Vdc_calc_low   = 10;
     code_adc_vdc_high   = 2500;
@@ -35,7 +49,6 @@ void commonVariableInit()
     inv_Kt=1.0/Kt;
     P_pair=(codeMotorPole/2.0);
     inv_P_pair=1.0/P_pair;
-    rpm_Coeff=60.0*inv_P_pair/PI_2;             // 회전수/분
 
     inv_Ts = codePwmFreq;
     Ts = 1.0 / codePwmFreq;  // pwm switching frequency
@@ -51,9 +64,9 @@ void commonVariableInit()
     CosDeltaTheta=0.0;
     SinDeltaTheta=1.0;
 
-    we_rat=PI_2 * codeRateHz;
-    wr_rat=PI_2* codeMotorPole * codeRateRpm/120.0;
-    wm_rat=wr_rat*(2.0/codeMotorPole);
+    we_rat = PI_2 * codeRateHz;
+    wr_rat = PI_2* codeMotorPole * codeRateRpm/120.0;
+    wm_rat = wr_rat*(2.0/codeMotorPole);
     Te_rat = codeRatePower / wm_rat;
     inv_Te_rat=1.0/Te_rat;
 
@@ -100,6 +113,7 @@ void commonVariableInit()
     // 전압
     Vs_rat = sqrt(2.0)/sqrt(3.0) * codeRateVolt;         // 상전압의 피크 값
     Vs_max=0.0;
+    Vs_ref = 0.0;
     Vs_abc[as]=Vs_abc[bs]=Vs_abc[cs]=0.0;
     Vs_abc_ref[as]=Vs_abc_ref[bs]=Vs_abc_ref[cs]=0.0;
     Vs_dq_ref[ds]=Vs_dq_ref[qs]=0.0;

@@ -12,7 +12,7 @@
 //*******************************************
 #define GATE_ACTIVE_LOW         1       // IRS2336D
 #define TEST_ADC_CENTER			1
-#define GRAPH_NUMBER			600
+#define SCOPE_MAX_NUMBER        600
 
 //*******************************************
 
@@ -81,7 +81,7 @@ typedef union
 } UNION16;
 
 #define SCIA_RX_BUF_MAX     30
-#define SCIA_TX_BUF_MAX     1300
+#define SCIA_TX_BUF_MAX     2000
 
 //--- button_proc.c
 #define BUTTON_ROOT				0
