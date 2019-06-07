@@ -14,24 +14,25 @@ void hyd_unit_proc(int state, double * ref_out)
 	static int hyd_low_count=0;
 	static double ref_in = 1.0;
 	static unsigned long ulCount;
+	double exSens;
 
  	if( ulGetNow_mSec( )== ulCount ) return;
 	ulCount = ulGetNow_mSec( );
 
+	exSens = adcExSensor * 0.0002441406250;
+
 	if( state == STATE_RUN ){
-		if( exSensRef < ( codePresSensRef - 0.1 ) ) hyd_low_count++;
-		else if ( exSensRef >  codePresSensRef ) hyd_low_count --;
+		if( exSens < ( codePresSensRef - 0.1 ) ) hyd_low_count++;
+		else if ( exSens >  codePresSensRef ) hyd_low_count --;
 
 		if( hyd_low_count > 3){
-			hyd_low_count = 4; ref_in = codeSpeed2;    // hyd_max_ref
+		    hyd_low_count = 4; ref_in = 0.9 ; // ref_in = codeSpeed2;    // hyd_max_ref
 		} else if( hyd_low_count <= 0 ){
-			hyd_low_count = 0 ; ref_in = codeSpeed1;    // hyd_low_ref
+			hyd_low_count = 0 ; ref_in = 0.2 ; // codeSpeed1;    // hyd_low_ref
 		}
 	}
 	else	ref_in = 0.0;
-
 	RefFunc( ref_in, ref_out );
-
 }
 
 #define btn_start_ref       0.01
@@ -43,6 +44,7 @@ int hyd_unit_loop_proc()
 
 	int cmd;
 	double fReference;
+	double dtemp;
 
     commonVariableInit();
 	iTripCode = HardwareParameterVerification();
@@ -57,36 +59,47 @@ int hyd_unit_loop_proc()
 	IER |= M_INT3;      // debug for PWM
 
 	gRunFlag =1;
-	strncpy(MonitorMsg," INIT MOTOR RUN     ",20);
 	gfRunTime = 0.0; 
 	LoopCtrl = 1;		
 
 	reference_in = btn_start_ref;
-	gMachineState = STATE_RUN;
-	
-	while(LoopCtrl == 1)
+	gMachineState = STATE_INIT_RUN;    strncpy(MonitorMsg,"INIT",20);
+ 	while(LoopCtrl == 1)
 	{
 		if(gPWMTripCode != 0){
 			iTripCode = gPWMTripCode;
 			LoopCtrl = 0;
 			break;
 		}		
-		get_command(& cmd ,&fReference);	// Command�� �Է� ���� 				
+		//get_command(& cmd ,&fReference);	// Command�� �Է� ����
+        digital_input_proc( & cmd, & dtemp);
 		monitor_proc();
 
-		if( cmd == CMD_START) reference_in = fReference;
+		if( cmd == CMD_START) reference_in = 0.5;
 		else if( cmd == CMD_STOP) reference_in = 0.0;
 
 		switch( gMachineState )
 		{
+        case STATE_INIT_RUN:
+            if( cmd == CMD_STOP){
+                strncpy(MonitorMsg,"READY",20); gMachineState = STATE_READY; LoopCtrl= 0;
+            } else if( gfRunTime < 0.2 ){
+                Freq_ref=0.0;   rpm_ref=0.0; reference_out = 0.0;
+            } else{
+                strncpy(MonitorMsg,"RUN",20); gMachineState = STATE_RUN; reference_out = MIN_REF;
+            }
+            break;
 		case STATE_RUN:
-			if(  cmd == CMD_STOP ){
+		    if(  cmd == CMD_STOP ){
 				strncpy(MonitorMsg," INV GO STOP        ",20);
 				reference_in = 0.0; gMachineState = STATE_GO_STOP;
+		    } else if( gfRunTime < 10.0 ){
+		         reference_in = 0.8;
+                rampFunc1(reference_in, & reference_out,3.0);
+		    } else{
+                hyd_unit_proc( gMachineState, & reference_out);
 			}
-			else{ 
-				hyd_unit_proc( gMachineState, & reference_out);
-			}
+
 		case STATE_GO_STOP:
 			if( cmd == CMD_START ) {
 									  //"01234567890123456789"	

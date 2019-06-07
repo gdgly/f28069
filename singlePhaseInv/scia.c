@@ -205,7 +205,7 @@ void load_scia_tx_mail_box( char * st)
 }
 
 // channel 100,101,102,103
-
+// 157msec
 void loadSciaTxBufAdc(int channel )
 {
     int i,j;
@@ -235,7 +235,7 @@ void loadSciaTxBufAdc(int channel )
         str[2] += (j+1);
         str[5] = 0;
         load_scia_tx_mail_box(str);
-        delay_msecs(200);
+        delay_msecs(200);           // 157msec
     }
     sendAdcDataFlag = 0;
 }

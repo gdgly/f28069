@@ -79,6 +79,7 @@ extern void monitor_proc();     // need_edit
 extern void commonVariableInit();
 
 // RefFunc.c
+extern void rampFunc1( double SetRef,double * pOutRef, double accelIn);
 extern void ramp_proc(  double set_ref, double * out_ref);
 extern void RefFunc( double SetRef,double * pOutRef);
 
