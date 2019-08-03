@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>singlePhaseInv</name>
+	<name>windPower</name>
 	<comment></comment>
 	<projects>
 	</projects>
@@ -84,23 +84,23 @@
 	<variableList>
 		<variable>
 			<name>INSTALLROOT_F2806x</name>
-			<value>file:/home/eunwho/ti/C2000Ware_1_00_05_00/device_support/f2806x</value>
+			<value>file:/home/ew/ti/c2000/C2000Ware_2_00_00_02/device_support/f2806x</value>
 		</variable>
 		<variable>
 			<name>INSTALLROOT_F2806x_TO_MWARE</name>
-			<value>file:/home/eunwho/ti/C2000Ware_1_00_05_00/device_support/f2806x/MWare</value>
+			<value>file:/home/ew/ti/c2000/C2000Ware_2_00_00_02/device_support/f2806x/MWare</value>
 		</variable>
 		<variable>
 			<name>INSTALLROOT_FASTRTS</name>
-			<value>file:/home/eunwho/ti/C2000Ware_1_00_05_00/libraries/math/FPUfastRTS/c28</value>
+			<value>file:/home/ew/ti/c2000/C2000Ware_2_00_00_02/libraries/math/FPUfastRTS/c28</value>
 		</variable>
 		<variable>
 			<name>INSTALLROOT_HCCAL</name>
-			<value>file:/home/eunwho/ti/C2000Ware_1_00_05_00/libraries/calibration/hrcap</value>
+			<value>file:/home/ew/ti/c2000/C2000Ware_2_00_00_02/libraries/calibration/hrcap</value>
 		</variable>
 		<variable>
 			<name>INSTALLROOT_IQMATH</name>
-			<value>file:/home/eunwho/ti/C2000Ware_1_00_05_00/libraries/math/IQmath/c28</value>
+			<value>file:/home/ew/ti/c2000/C2000Ware_2_00_00_02/libraries/math/IQmath/c28</value>
 		</variable>
 	</variableList>
 </projectDescription>
