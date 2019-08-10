@@ -6,6 +6,8 @@
 #include	"extern.h"
 #include	"global.h"
 
+
+#if ROM_ENABLE
 #pragma CODE_SECTION(MainPWM, "ramfuncs");
 #pragma CODE_SECTION(adcIsr, "ramfuncs");
 #pragma CODE_SECTION(SL_SpeedCntl_SFRF, "ramfuncs");
@@ -22,6 +24,7 @@ extern Uint16 RamfuncsLoadStart;
 extern Uint16 RamfuncsLoadEnd;
 extern Uint16 RamfuncsRunStart;
 Uint16 RamfuncsLoadSize;
+#endif
 
 void InitWatchDog();
 
@@ -45,8 +48,10 @@ void main( void )
 	gMachineState = STATE_POWER_ON; 
 	DINT;
 
+#if ROM_ENABLE
 	memcpy(&RamfuncsRunStart, &RamfuncsLoadStart, (Uint32)&RamfuncsLoadSize);
 	InitFlash();
+#endif
 
 	InitPieCtrl();
 	IER = 0x0000;   IFR = 0x0000;
@@ -98,16 +103,15 @@ void main( void )
     ADC_SOC_CNF();
     strncpy(MonitorMsg,"POWER_ON",20);
     gPWMTripCode = 0;		//
-
-
-    /*
+/*
     for( ; ; )
     {
         strncpy(gStr1,"Hello from Vector Inverter !\r\n",40);
         load_sci_tx_mail_box(gStr1);
         delay_msecs(1000);
     }
-     */
+*/
+
     if( load_code2ram() != 0 ) tripProc();
 
     commonVariableInit();
@@ -169,12 +173,7 @@ void main( void )
             {
             case 0: trip_code = vf_loop_control(ref_in0)        ; break;
             case 1: trip_code = vf_loop_control(ref_in0)        ; break;        //
-            case 3: trip_code = vectorCtrlLoop()                ; break;
-            case 4: trip_code = vectorCtrlLoop()                ; break;    // TORQUE Ctrl
-            case 5: trip_code = parameter_estimation()          ; break;    // mode 5
-            case 7: trip_code = hyd_unit_loop_proc()            ; break;    // hydro unit
-//           case 8 : pwm_pulse_test( ); break;
-//           case 9 : vf_conv_test(ref_in0); break;
+            case 6: trip_code = windPowerLoop(ref_in0)          ; break;    // wind power generator inverter
             }
             if( trip_code !=0 ) tripProc();
         }

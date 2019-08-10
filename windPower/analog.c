@@ -92,6 +92,13 @@ interrupt void adcIsr(void)
     Is_mag_rms = 0.707106*Is_mag;
     LPF1(Ts,1.0,fabs(Is_abc[as]),&LPF_Ia);                          // debug
 
+    // debug jsk
+    Vdc = 300.0;
+    Is_abc[as] = 2.0;
+
+    P_total = Vdc * Is_abc[as];
+   windEnergy += P_total * Ts;
+
     fTemp = adc_result[4] * 0.000244 ;
     LPF1(Ts,0.01, fTemp, &exSensRef);            // external sensor
 

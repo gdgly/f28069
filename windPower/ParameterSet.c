@@ -7,6 +7,11 @@ void commonVariableInit()
 {
     double x1,x2,y1,y2;
 
+    //-- 2019.08.09 windPower
+    wattHour = (int)(code_wattHour);
+    kWattHour = (int)(code_kWattHour);
+    // --- end
+
     setScopePoint();
 
     scopeLoopCount = (int)(codeScopeLoopCount);
@@ -21,13 +26,13 @@ void commonVariableInit()
     invCodeScopeScaleCh3 = 1.0 / codeScopeScaleCh3;
     invCodeScopeScaleCh4 = 1.0 / codeScopeScaleCh4;
 
-    code_adc_vdc_low    = 100;
-    code_Vdc_calc_low   = 10;
-    code_adc_vdc_high   = 2500;
-    code_Vdc_calc_high  = 300;
+//    code_adc_vdc_low    = 100;
+//    code_Vdc_calc_low   = 10;
+//    code_adc_vdc_high   = 2500;
+//    code_Vdc_calc_high  = 300;
 
-    x1 = code_adc_vdc_low;      y1 = code_Vdc_calc_low;
-    x2 = code_adc_vdc_high;     y2 = code_Vdc_calc_high;
+    x1 = code_adc_Vdc_low;      y1 = code_Vdc_calc_low;
+    x2 = code_adc_Vdc_high;     y2 = code_Vdc_calc_high;
 
     Vdc_factor = ( y2-y1) / ( x2 - x1 );
     Vdc_calc_offset = (( y1 * x2 - y2 * x1 )/ (x2- x1));

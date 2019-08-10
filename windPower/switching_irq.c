@@ -14,20 +14,7 @@ void MotorControlProc( )
     {
     case 0: vf_simple_control(); break;
     case 1: slip_comp_scalar_ctrl();break;
-    case 3: SL_SpeedCntl_SFRF( );   break;
-    case 4: SL_TorqueCntl_SFRF( );  break;
-    case 7: hyd_unit_control()      ; break;
-    case 5:
-        switch(AutoTuningFlag)
-        {
-        case 0: Vs_dq_ref[ds] = 0.0; Vs_dq_ref[qs] = 0.0; break;
-        case ID_AT_LEQ_REQ: estim_ReqLeq_pwm ( );   break;
-        case ID_AT_RS:  estim_Rs_pwm( );            break;
-        case ID_AT_LS:  estim_Ls_pwm( );            break;
-        case ID_AT_JM:  estim_Jm_pwm( );            break;
-        default:    Vs_dq_ref[ds] = 0.0; Vs_dq_ref[qs] = 0.0; break;
-        }
-        break;
+    case 6: windPowerCtrl( )        ; break;
     }
 }
 
@@ -64,7 +51,7 @@ interrupt void MainPWM(void)
         EPwm1Regs.CMPA.half.CMPA = MAX_PWM_CNT;
         EPwm2Regs.CMPA.half.CMPA = MAX_PWM_CNT;
         EPwm3Regs.CMPA.half.CMPA = MAX_PWM_CNT;
-            Im_Power = 0;  Re_Power = 0; P_total = 0;
+            Im_Power = 0;  Re_Power = 0; // P_total = 0;
          break;
     case STATE_INIT_RUN:
         VoltageEstimation();
@@ -87,10 +74,6 @@ interrupt void MainPWM(void)
             VoltageEstimation();
             MotorControlProc( );
             SpaceVectorModulation(Vs_dq_ref);
-
-            LPF1(Ts,100.0,Vs_dq[qs]*Is_dq[ds] - Vs_dq[ds]*Is_dq[qs],&Im_Power);             // ��ȿ����
-            LPF1(Ts,100.0,(Vs_dq[ds]*Is_dq[ds] + Vs_dq[qs]*Is_dq[qs]) - Rs*(Is_mag*Is_mag),&Re_Power);  // ��ȿ����
-            P_total = Re_Power + Im_Power;
 
             EPwm3Regs.CMPA.half.CMPA = DutyCount[u];
             EPwm2Regs.CMPA.half.CMPA = DutyCount[v];

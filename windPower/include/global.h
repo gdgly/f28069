@@ -1,6 +1,11 @@
 #ifndef		__GLOBAL_VARIABLES_
 #define		__GLOBAL_VARIABLES_
 
+// for windPower
+double windEnergy;
+int wattHour;
+int kWattHour;
+
 // testing
 int lpfadcIa;
 int lpfadcIb;
@@ -392,12 +397,10 @@ double v_phase_I_sense_span;    // 26
 double vdc_sense_zero;          // 27
 double vdc_sense_span;          // 28
 
-double Rs;                      // 30
-double Rr;                      // 31
-double Ls;                      // 32
-double Lr;                      // 33
-double Lm;                      // 34
-double Jm;                      // 35
+double code_adc_Vdc_low;        // 36
+double code_adc_Vdc_high;       // 37
+double code_Vdc_calc_low;       // 38
+double code_Vdc_calc_high;      // 39
 
 // group6
 double VF_DeadTimeGain;         // 40
@@ -410,57 +413,9 @@ double VF_IR_Comp_FilterPole;   // 46
 double VF_Slip_Comp_FilterPole; // 47
 double VF_Rs;                   // 48
 
-double AT_Freq_Leq_Req;         // 50
-double AT_Time_Leq_Req;         // 51
-double AT_Is_Coeff_Leq_Req;     // 52
-double AT_Is_Coeff_Rs;          // 53
-double AT_Time_Rs;              // 54
-double AT_DeadTimeGain;         // 55
-double AT_Ls_Vs_RAMP;           // 56
-double AT_Freq_Ls;              // 57
-double AT_Time_Ls;              // 58
-double AT_Ls_DMB_OpenTime;      // 59
+double  code_wattHour;              //50
+double  code_kWattHour;             //51
 
-double AT_Te_Coeff_Jm;          // 60
-double AT_Time_Jm;              // 61
-double Jm_ID_ENABLE;            // 62
-
-double posi_duration_time;      // 63
-double zero_duration_time;      // 64
-double nega_duration_time;      // 65
-double test_accel_time;         // 66
-double test_decel_time;         // 67
-double codeRampTest;            // 68
-
-// group 7 advance control vaiable
-
-double wr_FilterPoleCoeff;      // 70
-double wn_wr_Coeff;             // 71
-double Max_wn_wr;               // 72
-double K_Damp_wr;               // 73
-double wr_DampingRatio;         // 74
-double wr_CntlPeriodIndex;      // 75
-
-double FW_VoltageCoeff;         // 76
-double Base_Flux_Coeff;         // 77
-double ExcitationTime;          // 78
-double K_Damp_Fr;               // 79
-double GM_Fr;                   // 80
-double PM_Fr;                   // 81
-double K_Damp_Is;               // 82
-double codeKpIs;                   // 83
-double codeKiIs;                   // 84
-
-double Default_wr_FilterPole;   // 85
-double SlipCompCoeff;           // 86
-double GammaLambda;             // 87
-double GammaLambda_R_Constant;  // 88
-double Max_DeltaLambda;         // 89
-double GammaTheta_M;            // 90
-double GammaTheta_R;            // 91
-double Max_DeltaTheta;          // 92
-double Delta_wr_FilterPoleCoeff_L; // 93
-double Delta_wr_FilterPoleCoeff_U; //94
 
 double codeScopeLoopCount;
 
@@ -499,10 +454,6 @@ double over_I_time;				// 307
 
 double code_Vdc_scaler;			// 308  2011.0613
 double code_Vdc_offseter;		// 309
-double code_adc_vdc_low;		// 310
-double code_adc_vdc_high;		// 311
-double code_Vdc_calc_low;		// 312
-double code_Vdc_calc_high;		// 313
 
 double Data_Check;				// 800
 double Data_Backup;				// 801

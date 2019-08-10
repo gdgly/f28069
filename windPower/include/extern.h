@@ -1,6 +1,11 @@
 #ifndef     __VARIABLES_
 #define     __VARIABLES_
 
+// for windPower
+extern double windEnergy;
+extern int wattHour;
+extern int kWattHour;
+
 // testing
 extern int lpfadcIa;
 extern int lpfadcIb;
@@ -387,12 +392,11 @@ extern double v_phase_I_sense_span;    // 24
 extern double vdc_sense_zero;          // 25
 extern double vdc_sense_span;          // 26
 
-extern double Rs;                      // 30
-extern double Rr;                      // 31
-extern double Ls;                      // 32
-extern double Lr;                      // 33
-extern double Lm;                      // 34
-extern double Jm;                      // 35
+
+extern double code_adc_Vdc_low;        // 36
+extern double code_adc_Vdc_high;       // 37
+extern double code_Vdc_calc_low;       // 38
+extern double code_Vdc_calc_high;      // 39
 
 extern double VF_DeadTimeGain;         // 40
 extern double VF_ExcitationTime;       // 41
@@ -404,57 +408,9 @@ extern double VF_IR_Comp_FilterPole;   // 46
 extern double VF_Slip_Comp_FilterPole; // 47
 extern double VF_Rs;                   // 48
 
-extern double AT_Freq_Leq_Req;         // 50
-extern double AT_Time_Leq_Req;         // 51
-extern double AT_Is_Coeff_Leq_Req;     // 52
-extern double AT_Is_Coeff_Rs;          // 53
-extern double AT_Time_Rs;              // 54
-extern double AT_DeadTimeGain;         // 55
-extern double AT_Ls_Vs_RAMP;           // 56
-extern double AT_Freq_Ls;              // 57
-extern double AT_Time_Ls;              // 58
-extern double AT_Ls_DMB_OpenTime;      // 59
 
-extern double AT_Te_Coeff_Jm;          // 60
-extern double AT_Time_Jm;              // 61
-extern double Jm_ID_ENABLE;            // 62
-
-extern double posi_duration_time;      // 63
-extern double zero_duration_time;      // 64
-extern double nega_duration_time;      // 65
-extern double test_accel_time;         // 66
-extern double test_decel_time;         // 67
-extern double codeRampTest;            // 68
-
-// group 7 advance control vaiable
-
-extern double wr_FilterPoleCoeff;      // 70
-extern double wn_wr_Coeff;             // 71
-extern double Max_wn_wr;               // 72
-extern double K_Damp_wr;               // 73
-extern double wr_DampingRatio;         // 74
-extern double wr_CntlPeriodIndex;         // 75
-
-extern double FW_VoltageCoeff;         // 76
-extern double Base_Flux_Coeff;         // 77
-extern double ExcitationTime;          // 78
-extern double K_Damp_Fr;               // 79
-extern double GM_Fr;                   // 80
-extern double PM_Fr;                   // 81
-extern double K_Damp_Is;               // 82
-extern double codeKpIs;                   // 83
-extern double codeKiIs;                   // 84
-
-extern double Default_wr_FilterPole;   // 85
-extern double SlipCompCoeff;           // 86
-extern double GammaLambda;             // 87
-extern double GammaLambda_R_Constant;  // 88
-extern double Max_DeltaLambda;         // 89
-extern double GammaTheta_M;            // 90
-extern double GammaTheta_R;            // 91
-extern double Max_DeltaTheta;          // 92
-extern double Delta_wr_FilterPoleCoeff_L; // 93
-extern double Delta_wr_FilterPoleCoeff_U; //94
+extern double  code_wattHour;              //50
+extern double  code_kWattHour;             //51
 
 extern double codeScopeLoopCount;
 
@@ -473,6 +429,7 @@ extern double codeScopeOffsetCh3;
 extern double codeScopePointCh4;
 extern double codeScopeScaleCh4;
 extern double codeScopeOffsetCh4;
+
 // end of code
 extern double invCodeScopeScaleCh1;
 extern double invCodeScopeScaleCh2;
@@ -493,10 +450,6 @@ extern double over_I_time;             // 307
 
 extern double code_Vdc_scaler;         // 308  2011.0613
 extern double code_Vdc_offseter;       // 309
-extern double code_adc_vdc_low;        // 310
-extern double code_adc_vdc_high;       // 311
-extern double code_Vdc_calc_low;       // 312
-extern double code_Vdc_calc_high;      // 313
 
 extern double Data_Check;              // 800
 extern double Data_Backup;             // 801

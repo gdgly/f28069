@@ -144,4 +144,9 @@ extern int SaveDataProc(int addr, double data);
 interrupt void cpu_timer0_isr(void);
 interrupt void MainPWM(void);
 interrupt void wakeint_isr(void);
+
+// windPower.c
+void windPowerCtrl();
+int windPowerLoop(double cmd_ref);
+
 #endif

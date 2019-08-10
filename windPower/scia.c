@@ -58,8 +58,11 @@ void scia_fifo_init()
 }
 
 #define INV_RPM_SCALE   0.005     // 1.0 / 200.0 ;
+#define INV_VDC_SCALE   0.02     // 1.0 / 50.0 ;
 #define INV_I_SCALE     0.5         //  = 1.0 / 2.0 ;
-#define INV_P_SCALE     0.001      // 1/1000
+// #define INV_P_SCALE     0.001      // 1/1000
+#define INV_P_SCALE     0.01      // 1/100
+
 void sciaMonitor()     // need_edit
 {
     UNION16 unionRpm,unionIrms,unionPower, unionRePower,unionImPower;
@@ -108,11 +111,18 @@ void sciaMonitor()     // need_edit
     strncpy( str,"9:4:900:0.000e+0:",17); load_scia_tx_mail_box(str);
     load_scia_tx_mail_box(MonitorMsg);
 
-    unionRpm.INTEGER    = (int)( rpm * INV_RPM_SCALE * 204.8) + 2048;
+    //    unionRpm.INTEGER    = (int)( rpm * INV_RPM_SCALE * 204.8) + 2048;
+    //    unionIrms.INTEGER   = (int)( Is_mag_rms * INV_I_SCALE * 204.8) + 2048;
+    //   unionRePower.INTEGER  = (int)( Re_Power * INV_P_SCALE * 204.8) + 2048;
+    //   unionImPower.INTEGER  = (int)( Im_Power * INV_P_SCALE * 204.8) + 2048;
+
+    unionRpm.INTEGER    = (int)( Vdc * INV_VDC_SCALE * 204.8) + 2048;
     unionIrms.INTEGER   = (int)( Is_mag_rms * INV_I_SCALE * 204.8) + 2048;
     unionPower.INTEGER  = (int)( P_total * INV_P_SCALE * 204.8) + 2048;
-    unionRePower.INTEGER  = (int)( Re_Power * INV_P_SCALE * 204.8) + 2048;
-    unionImPower.INTEGER  = (int)( Im_Power * INV_P_SCALE * 204.8) + 2048;
+    unionRePower.INTEGER  = (int)( 111.0 * INV_P_SCALE * 204.8) + 2048;
+    unionImPower.INTEGER  = (int)( 222.0 * INV_P_SCALE * 204.8) + 2048;
+    //   unionRePower.INTEGER  = (int)( wattHour * INV_P_SCALE * 204.8) + 2048;
+     //   unionImPower.INTEGER  = (int)( kWattHour * INV_P_SCALE * 204.8) + 2048;
 
     i = 0;
     str[ i*3 + 0] = (( unionRpm.byte.MSB     ) & 0x0f) | 0x40  ;
@@ -496,17 +506,17 @@ void scia_cmd_proc( int * sci_cmd, double * sci_ref)
              return;
          }
          else if (addr == 909 ){
-                 temp = (int) rpm;
-              snprintf( str,20,"Rpm = %4d : ",temp); load_scia_tx_mail_box(str);
-              snprintf( str,20,"Irms = %1e : ",Is_mag_rms); load_scia_tx_mail_box(str);
-              snprintf( str,20,"P_total = %1e : ",P_total); load_scia_tx_mail_box(str);
-              snprintf( str,20,"refer_out = %1e : ",reference_out); load_scia_tx_mail_box(str);
+                 temp = (int) Vdc;
+              snprintf( str,20,"Vdc = %4d : ",temp); load_scia_tx_mail_box(str);
+              snprintf( str,20,"P_total = %4d : ",(int)(P_total)); load_scia_tx_mail_box(str);
+              snprintf( str,20,"wH  = %4d : ", wattHour ); load_scia_tx_mail_box(str);
+              snprintf( str,20,"kWH = %4d : ", kWattHour ); load_scia_tx_mail_box(str);
               load_scia_tx_mail_box(" \r\n");
               delay_msecs(10);
               return;
           }
          else if (addr == 910 ){
-              snprintf( str,20,"Ia = %4d : ",adc_result[0]); load_scia_tx_mail_box(str);
+              snprintf( str,20,"Iin= %4d : ",adc_result[0]); load_scia_tx_mail_box(str);
               snprintf( str,20,"Ib = %4d : ",adc_result[1]); load_scia_tx_mail_box(str);
               snprintf( str,20,"Vdc= %4d : ",adc_result[2]); load_scia_tx_mail_box(str);
               snprintf( str,20,"Tmp= %4d : ",adc_result[3]); load_scia_tx_mail_box(str);
