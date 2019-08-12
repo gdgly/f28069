@@ -75,7 +75,7 @@
 //
 #define Is_Max_Coeff            2.0
 #define over_volt_set           380
-#define UNDER_VOLT_LEVEL        180.0
+#define UNDER_VOLT_LEVEL        160.0
 
 
 

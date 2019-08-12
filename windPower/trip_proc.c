@@ -21,7 +21,7 @@ void trip_recording(int trip_code,double trip_data,char * st)
     else            gTripSaveFlag = 0;
 }
 
-#define OVER_I_LIMIT    50.0
+#define OVER_I_LIMIT    5.0
 int CheckOverCurrent( )
 {
 	if( adcIa > 3500){
@@ -119,7 +119,7 @@ int trip_check()
 	TripCode = 0;
 	if( ( TripCode = CheckOverCurrent()) != 0 ) return TripCode ;	//
 	if( ( TripCode = CheckOverVolt()   ) != 0 ) return TripCode ;
-	if( ( TripCode = CheckUndeVolt()   ) != 0 ) return TripCode ;	//
+//	if( ( TripCode = CheckUndeVolt()   ) != 0 ) return TripCode ;	//
 	if( ( TripCode = CheckOverHeat()   ) != 0 ) return TripCode ;
 	if( ( TripCode = CheckIGBTFault()  ) != 0 ) return TripCode ;
 	return TripCode;

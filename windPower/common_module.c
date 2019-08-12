@@ -109,11 +109,12 @@ void get_command( int * command, double * ref )
 	analog_cmd_proc( & analog_ref);
 
 	* command = digital_cmd;
-
+/*
     if( digital_cmd == CMD_START ){
-        if( analog_ref < 0.01 )   * command = CMD_STOP;
-        else                   * ref = analog_ref;
+        //if( analog_ref < 0.01 )   * command = CMD_STOP;
+        //else                   * ref = analog_ref;
     }
+*/
     if( sci_cmd != CMD_NULL ) * command = sci_cmd;
 }
 

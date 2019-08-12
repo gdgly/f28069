@@ -61,7 +61,8 @@ void scia_fifo_init()
 #define INV_VDC_SCALE   0.02     // 1.0 / 50.0 ;
 #define INV_I_SCALE     0.5         //  = 1.0 / 2.0 ;
 // #define INV_P_SCALE     0.001      // 1/1000
-#define INV_P_SCALE     0.01      // 1/100
+#define INV_P_SCALE     0.0025      // 1/400
+#define INV_WH_SCALE     0.005      // 1/200
 
 void sciaMonitor()     // need_edit
 {
@@ -117,12 +118,12 @@ void sciaMonitor()     // need_edit
     //   unionImPower.INTEGER  = (int)( Im_Power * INV_P_SCALE * 204.8) + 2048;
 
     unionRpm.INTEGER    = (int)( Vdc * INV_VDC_SCALE * 204.8) + 2048;
-    unionIrms.INTEGER   = (int)( Is_mag_rms * INV_I_SCALE * 204.8) + 2048;
+    unionIrms.INTEGER   = (int)( Is_abc[as] * INV_I_SCALE * 204.8) + 2048;
     unionPower.INTEGER  = (int)( P_total * INV_P_SCALE * 204.8) + 2048;
-    unionRePower.INTEGER  = (int)( 111.0 * INV_P_SCALE * 204.8) + 2048;
-    unionImPower.INTEGER  = (int)( 222.0 * INV_P_SCALE * 204.8) + 2048;
-    //   unionRePower.INTEGER  = (int)( wattHour * INV_P_SCALE * 204.8) + 2048;
-     //   unionImPower.INTEGER  = (int)( kWattHour * INV_P_SCALE * 204.8) + 2048;
+    //unionRePower.INTEGER  = (int)( 111.0 * INV_P_SCALE * 204.8) + 2048;
+    //unionImPower.INTEGER  = (int)( 222.0 * INV_P_SCALE * 204.8) + 2048;
+    unionRePower.INTEGER  = (int)( wattHour * INV_WH_SCALE * 204.8) + 2048;
+    unionImPower.INTEGER  = (int)( kWattHour * INV_WH_SCALE * 204.8) + 2048;
 
     i = 0;
     str[ i*3 + 0] = (( unionRpm.byte.MSB     ) & 0x0f) | 0x40  ;
@@ -313,6 +314,8 @@ void scia_cmd_proc( int * sci_cmd, double * sci_ref)
 	double data,dbtemp;
     int addr,check,temp;
     char str[30]={0};
+    static unsigned long sciChkCount=0;
+    unsigned long sciOffTimeMsec;
 
     TRIP_INFO * TripData;
 
@@ -322,7 +325,14 @@ void scia_cmd_proc( int * sci_cmd, double * sci_ref)
 	* sci_cmd = CMD_NULL;
 	* sci_ref = 0.0;
 
-	if( scia_rx_msg_flag == 0) return;
+	if( scia_rx_msg_flag == 0) {
+        sciOffTimeMsec = ulGetTime_mSec( sciChkCount);
+        if(sciOffTimeMsec > 10000 ) {
+            scia_fifo_init();
+	        sciChkCount = ulGetNow_mSec( );
+	    }
+	    return;
+	}
 
 	scia_rx_msg_flag = 0;
 

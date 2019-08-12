@@ -40,6 +40,7 @@ int windPowerLoop(double cmd_ref)
 	{
 
 	    RunTimeMsec = ulGetTime_mSec( StartTimeMsec);
+
 	    if(RunTimeMsec > 1000){
 	        StartTimeMsec = ulGetNow_mSec( );
 	        // add wattHour and kWattHour
@@ -102,15 +103,21 @@ int windPowerLoop(double cmd_ref)
                 strncpy(MonitorMsg,"READY",20); gMachineState = STATE_READY; LoopCtrl= 0;
 		    } else if( gfRunTime < 0.2 ){
 				Freq_ref=0.0;	rpm_ref=0.0; reference_out = 0.0;
-			} else{
-				strncpy(MonitorMsg,"RUN",20);
-				gMachineState = STATE_RUN;
-				reference_out = 0.5;
+			} else {
+			    if ( Vdc > UNDER_VOLT_LEVEL ){
+			        strncpy(MonitorMsg,"RUN",20);
+			        gMachineState = STATE_RUN;
+			        reference_out = 0.5;
+			    }
 			}
 			break;
 		case STATE_RUN:
 		    reference_in = 1.0;
-			if( command == CMD_NULL ){
+            if ( Vdc < (UNDER_VOLT_LEVEL - 30.0) ){
+                strncpy(MonitorMsg,"INIT_RUN",20);
+                gMachineState = STATE_INIT_RUN;
+                reference_out = 0.0;
+            }else if ( command == CMD_NULL ){
 			    ramp_proc(reference_in, & reference_out);
 			} else if( command == CMD_STOP ) {
 				strncpy(MonitorMsg,"GO_STOP",20); gMachineState = STATE_GO_STOP; reference_in = 0.0;
@@ -128,11 +135,8 @@ int windPowerLoop(double cmd_ref)
 			if( command == CMD_START ) {
 				strncpy(MonitorMsg,"RUN",20); gMachineState = STATE_RUN;
 				// reference_in = reference_out; 
-			} else if ((fabs(reference_out) <= MIN_REF )){
-                strncpy(MonitorMsg,"READY",20);	gMachineState = STATE_READY; reference_out = Freq_out = 0.0; LoopCtrl = 0;
 			} else {
-				reference_in = 0.0;
-				ramp_proc(reference_in, &reference_out);
+                strncpy(MonitorMsg,"READY",20);	gMachineState = STATE_READY; reference_out = Freq_out = 0.0; LoopCtrl = 0;
 			}
 			break;
 		}

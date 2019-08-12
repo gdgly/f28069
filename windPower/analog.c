@@ -74,30 +74,29 @@ interrupt void adcIsr(void)
     sensVdc = Vdc_factor * adcVdc + Vdc_calc_offset;
     lpfVdcIn[0] = sensVdc;
     lpf2nd( lpfVdcIn, lpfVdcOut, lpfVdcK);
+
     Vdc = (codeSetVdc > 0.5 ) ? 300.0 : lpfVdcOut[0];
 
 //    lpfIaIn[0] = I_sense_value * ( adc_result[0] - adc_result[5]) * I_RATIO;
-    lpfIaIn[0] = I_sense_value * ( (double)(adc_result[0]) - codeIaOffset) * I_RATIO;
+    lpfIaIn[0] = abs(I_sense_value * ( (double)(adc_result[0]) - codeIaOffset) * I_RATIO * 0.4); // 0.4 by experiment
     lpf2nd( lpfIaIn, lpfIaOut, lpfIrmsK);
     Is_abc[as] = lpfIaOut[0];
 
-    lpfIbIn[0] = I_sense_value * ( (double)(adc_result[1]) - codeIbOffset) * I_RATIO;
+    lpfIbIn[0] = I_sense_value * ( (double)(adc_result[1]) - codeIbOffset) * I_RATIO * 0.4;
     lpf2nd( lpfIbIn, lpfIbOut, lpfIrmsK);
     Is_abc[bs] = lpfIbOut[0];
 
-    Is_abc[cs]= -(Is_abc[as]+Is_abc[bs]);
-    Is_dq[ds] = Is_abc[as];
-    Is_dq[qs] = 0.577350 * Is_abc[as] + 1.15470 * Is_abc[bs];
-    Is_mag = sqrt( Is_abc[as] *Is_abc[as] + Is_abc[bs] *Is_abc[bs]);           // 전류크기
-    Is_mag_rms = 0.707106*Is_mag;
+//    Is_abc[cs]= -(Is_abc[as]+Is_abc[bs]);
+//    Is_dq[ds] = Is_abc[as];
+//    Is_dq[qs] = 0.577350 * Is_abc[as] + 1.15470 * Is_abc[bs];
+//    Is_mag = sqrt( Is_abc[as] *Is_abc[as] + Is_abc[bs] *Is_abc[bs]);           // 전류크기
+
+    Is_mag_rms = Is_abc[as];
+
     LPF1(Ts,1.0,fabs(Is_abc[as]),&LPF_Ia);                          // debug
 
-    // debug jsk
-    Vdc = 300.0;
-    Is_abc[as] = 2.0;
-
     P_total = Vdc * Is_abc[as];
-   windEnergy += P_total * Ts;
+    windEnergy += P_total * Ts;
 
     fTemp = adc_result[4] * 0.000244 ;
     LPF1(Ts,0.01, fTemp, &exSensRef);            // external sensor

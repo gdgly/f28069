@@ -1,7 +1,7 @@
 #ifndef		__UDD_OPTION_H_
 #define		__UDD_OPTION_H_
 
-#define ROM_ENABLE          0
+#define ROM_ENABLE          1
 
 #define   RPM2WRM            (2.*PI/60.) 
 #define   WRM2RPM            (60./(2.*PI)) 
